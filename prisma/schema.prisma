@@ -15,6 +15,28 @@ model Ingredient {
   name String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  pizzaIngredients PizzaIngredient[]
 
   @@map("INGREDIENTS")
+}
+
+model Pizza {
+  id Int @id @default(autoincrement())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  pizzaIngredients PizzaIngredient[]
+
+  @@map("PIZZAS")
+}
+
+model PizzaIngredient {
+  ingredientId Int
+  pizzaId Int
+  pizza Pizza @relation(fields: [pizzaId], references: [id])
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([pizzaId, ingredientId])
+
+  @@map("PIZZA_INGREDIENTS")
 }
