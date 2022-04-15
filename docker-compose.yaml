@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  postgres_db:
+    image: postgres:14.2-alpine
+    restart: always
+    environment:
+      POSTGRES_DB: prisma-demo
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: demo
+      POSTGRES_HOST_AUTH: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+
+volumes:
+  db:
+    driver: local
