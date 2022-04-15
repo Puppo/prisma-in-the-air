@@ -11,5 +11,5 @@ export const SortingDirectionSchema = Type.Union([
   Type.Literal("desc"),
 ]);
 
-export const createSortingSchema = <T extends readonly string[]>(columns: T) =>
+export const createSortingSchema = <T>(columns: [keyof T, ...(keyof T)[]]) =>
   Type.RegEx(new RegExp(`^(?:[${columns.join("|")}]+:(?:asc|desc),?)+$`));
