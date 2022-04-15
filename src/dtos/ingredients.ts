@@ -13,7 +13,7 @@ export const IngredientDtoSchema = Type.Object({
 export type IngredientDto = Static<typeof IngredientDtoSchema>;
 
 export const IngredientsQuerySorting = Type.Optional(
-  createSortingSchema(["id", "name"])
+  createSortingSchema<IngredientDto>(["id", "name"])
 );
 export type IngredientsQuerySorting = Static<typeof IngredientsQuerySorting>;
 export const IngredientSortingSchema = Type.Array(
