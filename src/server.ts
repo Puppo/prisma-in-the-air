@@ -2,6 +2,8 @@ import fastify from "fastify";
 import autoLoad from "fastify-autoload";
 import { join } from "path";
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const schema = {
   type: "object",
   required: ["PORT"],
@@ -34,7 +36,6 @@ server.register(import("fastify-swagger"), {
     produces: ["application/json"],
   },
   uiConfig: {
-    docExpansion: "full",
     deepLinking: false,
   },
   uiHooks: {
