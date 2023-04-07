@@ -1,28 +1,23 @@
-import { FastifyPluginAsync } from "fastify";
 import {
-  IngredientDto,
+  FastifyPluginAsyncTypebox,
+  Type,
+} from "@fastify/type-provider-typebox";
+import {
   IngredientDtoSchema,
-  IngredientId,
   IngredientIdSchema,
   InternalServerErrorDtoSchema,
   NotFoundDtoSchema,
 } from "../../../dtos";
-import { NotFoundError } from "../../../errors";
 
-const routes: FastifyPluginAsync = async server => {
-  server.get<{
-    Params: {
-      id: IngredientId;
-    };
-    Reply: IngredientDto;
-  }>(
+const routes: FastifyPluginAsyncTypebox = async server => {
+  server.get(
     "/:id",
     {
       schema: {
         tags: ["Ingredients"],
-        params: {
+        params: Type.Object({
           id: IngredientIdSchema,
-        },
+        }),
         response: {
           200: IngredientDtoSchema,
           404: NotFoundDtoSchema,
@@ -30,12 +25,10 @@ const routes: FastifyPluginAsync = async server => {
         },
       },
     },
-    async request => {
-      const ingredient = await server.ingredientsRepository.getById(
-        request.params.id
-      );
+    async (request, reply) => {
+      const ingredient = await server.ingredients.getById(request.params.id);
       if (!ingredient)
-        throw new NotFoundError(
+        return reply.notFound(
           `Ingredient with id ${request.params.id} not found`
         );
       return ingredient;

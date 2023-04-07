@@ -1,40 +1,28 @@
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import { Type } from "@sinclair/typebox";
-import { FastifyPluginAsync } from "fastify";
 import {
   BadRequestDtoSchema,
-  IngredientsDto,
   IngredientsDtoSchema,
   IngredientSortingSchema,
   IngredientsQuerySorting,
   InternalServerErrorDtoSchema,
-  PaginationLimit,
   PaginationLimitSchema,
-  PaginationOffset,
   PaginationOffsetSchema,
 } from "../../../dtos";
-import { BadRequestError } from "../../../errors";
 import { convertSortingQueryString } from "../../../utils";
 
-const routes: FastifyPluginAsync = async server => {
-  server.get<{
-    Querystring: {
-      query: string;
-      sort_by?: IngredientsQuerySorting;
-      limit: PaginationLimit;
-      offset: PaginationOffset;
-    };
-    Reply: IngredientsDto;
-  }>(
+const routes: FastifyPluginAsyncTypebox = async server => {
+  server.get(
     "",
     {
       schema: {
         tags: ["Ingredients"],
-        querystring: {
-          query: Type.String(),
+        querystring: Type.Object({
+          query: Type.Optional(Type.String()),
           sort_by: IngredientsQuerySorting,
           limit: PaginationLimitSchema,
           offset: PaginationOffsetSchema,
-        },
+        }),
         response: {
           200: IngredientsDtoSchema,
           400: BadRequestDtoSchema,
@@ -42,16 +30,16 @@ const routes: FastifyPluginAsync = async server => {
         },
       },
     },
-    async request => {
+    async (request, replay) => {
       const { query, sort_by, limit, offset } = request.query;
       const sortingConvertResult = convertSortingQueryString(
         sort_by,
         IngredientSortingSchema
       );
       if (sortingConvertResult.type === "error")
-        throw new BadRequestError(sortingConvertResult.error);
+        return replay.badRequest(sortingConvertResult.error);
 
-      const ingredients = await server.ingredientsRepository.search({
+      const ingredients = await server.ingredients.search({
         query,
         sorting: sortingConvertResult.sorting,
         pagination: {

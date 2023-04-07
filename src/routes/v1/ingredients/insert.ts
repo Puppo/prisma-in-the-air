@@ -1,17 +1,12 @@
-import { FastifyPluginAsync } from "fastify";
+import { FastifyPluginAsyncTypebox } from "@fastify/type-provider-typebox";
 import {
-  IngredientDto,
   IngredientDtoSchema,
-  IngredientInsertDto,
   IngredientInsertDtoSchema,
   InternalServerErrorDtoSchema,
 } from "../../../dtos";
 
-const routes: FastifyPluginAsync = async server => {
-  server.post<{
-    Body: IngredientInsertDto;
-    Reply: IngredientDto;
-  }>(
+const routes: FastifyPluginAsyncTypebox = async server => {
+  server.post(
     "",
     {
       schema: {
@@ -23,10 +18,16 @@ const routes: FastifyPluginAsync = async server => {
         },
       },
     },
-    async request => {
-      const { name } = request.body;
-      const ingredient = await server.ingredientsRepository.add(name);
-      return { id: ingredient.id, name: ingredient.name };
+    async (request, replay) => {
+      try {
+        const { name } = request.body;
+        const ingredient = await server.ingredients.add(name);
+        return { id: ingredient.id, name: ingredient.name };
+      } catch (e) {
+        const message = "Error on insert ingredient";
+        server.log.error(e, message);
+        return replay.internalServerError(message);
+      }
     }
   );
 };

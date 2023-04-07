@@ -3,6 +3,7 @@ import { Static, Type } from "@sinclair/typebox";
 export const InternalServerErrorDtoSchema = Type.Object({
   statusCode: Type.Literal(500),
   error: Type.Literal("Internal Server Error"),
+  message: Type.Optional(Type.String()),
 });
 
 export type InternalServerErrorDto = Static<

@@ -1,7 +1,7 @@
 import { Static, Type } from "@sinclair/typebox";
 
-export const PaginationLimitSchema = Type.Integer({ min: 1, max: 100 });
-export const PaginationOffsetSchema = Type.Integer({ min: 0 });
+export const PaginationLimitSchema = Type.Integer({ minimum: 1, maximum: 100 });
+export const PaginationOffsetSchema = Type.Integer({ minimum: 0 });
 
 export type PaginationLimit = Static<typeof PaginationLimitSchema>;
 export type PaginationOffset = Static<typeof PaginationOffsetSchema>;
